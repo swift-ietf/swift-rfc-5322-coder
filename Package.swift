@@ -17,6 +17,7 @@ let package = Package(
         )
     ],
     dependencies: [
+        .package(url: "https://github.com/swift-atoms/swift-ascii.git", branch: "main"),
         .package(url: "https://github.com/swift-atoms/swift-byte.git", branch: "main"),
         .package(url: "https://github.com/swift-atoms/swift-coder.git", branch: "main"),
         .package(url: "https://github.com/swift-atoms/swift-cursor.git", branch: "main"),
@@ -24,6 +25,11 @@ let package = Package(
         .package(url: "https://github.com/swift-atoms/swift-parser.git", branch: "main"),
         .package(url: "https://github.com/swift-atoms/swift-serializer.git", branch: "main"),
         .package(url: "https://github.com/swift-molecules/swift-ascii-coder.git", branch: "main"),
+        .package(url: "https://github.com/swift-molecules/swift-ascii-parser.git", branch: "main"),
+        .package(
+            url: "https://github.com/swift-molecules/swift-ascii-serializer.git",
+            branch: "main"
+        ),
         .package(url: "https://github.com/swift-molecules/swift-binary-serializer.git", branch: "main"),
         .package(url: "https://github.com/swift-molecules/swift-cursor-parser.git", branch: "main"),
         .package(url: "https://github.com/swift-molecules/swift-cursor-coder.git", branch: "main"),
@@ -34,7 +40,10 @@ let package = Package(
         .target(
             name: "RFC 5322 Coder",
             dependencies: [
+                .product(name: "ASCII", package: "swift-ascii"),
                 .product(name: "ASCII Decimal Coder", package: "swift-ascii-coder"),
+                .product(name: "ASCII Serializer", package: "swift-ascii-serializer"),
+                .product(name: "Parseable ASCII", package: "swift-ascii-parser"),
                 .product(name: "Binary Serializable", package: "swift-binary-serializer"),
                 .product(name: "Byte", package: "swift-byte"),
                 .product(name: "Byte Standard Library Integration", package: "swift-byte"),
@@ -56,6 +65,9 @@ let package = Package(
             name: "RFC 5322 Coder Tests",
             dependencies: [
                 "RFC 5322 Coder",
+                .product(name: "ASCII", package: "swift-ascii"),
+                .product(name: "ASCII Serializer", package: "swift-ascii-serializer"),
+                .product(name: "Binary Serializable", package: "swift-binary-serializer"),
                 .product(name: "Byte", package: "swift-byte"),
                 .product(name: "Byte Standard Library Integration", package: "swift-byte"),
                 .product(name: "Coder", package: "swift-coder"),
