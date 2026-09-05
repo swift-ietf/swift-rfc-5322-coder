@@ -3,6 +3,7 @@ public import Coder
 public import Cursor
 public import Cursor_Standard_Library_Integration
 public import RFC_5322
+import ASCII
 import ASCII_Decimal_Coder
 import Binary_Serializable
 import Byte_Standard_Library_Integration

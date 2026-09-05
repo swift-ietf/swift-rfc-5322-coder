@@ -33,7 +33,8 @@ extension RFC_5322.Message.ID {
                 throw .missingAtSign("\(error)")
             }
             do throws(Failure) {
-                return try RFC_5322.Message.ID(ascii: [Byte](utf8: "<") + parts.0 + [Byte](utf8: "@") + parts.1 + [Byte](utf8: ">"))
+                let bytes = [Byte](utf8: "<") + parts.0 + [Byte](utf8: "@") + parts.1 + [Byte](utf8: ">")
+                return try RFC_5322.Message.ID(String(decoding: bytes, as: UTF8.self))
             } catch {
                 input.seek(to: start)
                 throw error

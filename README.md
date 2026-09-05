@@ -1,0 +1,3 @@
+# swift-rfc-5322-coder
+
+Wire coders for [swift-rfc-5322](https://github.com/swift-ietf/swift-rfc-5322): `RFC_5322.DateTime.Coder`, `RFC_5322.Message.ID.Coder`, `RFC_5322.Mailbox.Coder`, `RFC_5322.Mailbox.LocalPart.Coder`, `RFC_5322.Header.Coder`, `RFC_5322.Header.Name.Coder` and `RFC_5322.Header.Value.Coder` parse and serialize the Internet Message Format text forms over any byte cursor, `Coder.Codable` gives every one of them `encoded()` and `init(decoding:)`, and the `ASCII.Parseable`, `ASCII.Serializable` and `Binary.Serializable` conformances (including the full `RFC_5322.Message` renderer and its `description`) live here so that the domain package stays a pure model.
