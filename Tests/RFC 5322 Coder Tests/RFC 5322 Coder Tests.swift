@@ -1,8 +1,6 @@
 import Byte
-import Byte_Standard_Library_Integration
 import Coder
-import Coder_Standard_Library_Integration
-import Cursor_Standard_Library_Integration
+import Cursor
 import Parser
 import RFC_5322
 import RFC_5322_Coder
@@ -60,7 +58,7 @@ extension `RFC 5322 Coder Tests`.`DateTime Tests` {
     func `round-trips through its canonical form`() throws {
         let text = "Tue, 15 Nov 1994 08:12:31 +0000"
         let date = try RFC_5322.DateTime(text)
-        #expect(try date.encoded() == [Byte](utf8: text))
+        #expect(try type(of: date).coder.serialize(date) == [Byte](utf8: text))
     }
 }
 
@@ -86,6 +84,6 @@ extension `RFC 5322 Coder Tests`.`Message ID Tests` {
     @Test
     func `round-trips`() throws {
         let id = try RFC_5322.Message.ID("<abc@example.com>")
-        #expect(try id.encoded() == "<abc@example.com>")
+        #expect(try type(of: id).coder.serialize(id) == [Byte](utf8: "<abc@example.com>"))
     }
 }

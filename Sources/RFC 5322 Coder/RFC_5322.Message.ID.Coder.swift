@@ -1,16 +1,11 @@
+import Pair
 public import Byte
 public import Coder
 public import Cursor
-public import Cursor_Standard_Library_Integration
 public import RFC_5322
-import Binary_Serializable
-import Byte_Standard_Library_Integration
-import Cursor_Coder
-import Cursor_Parser_Many
-import Either
-import Iterator_Coder
+import Binary
 import Parser
-import Parser_Error
+import Either
 import Serializer
 
 extension RFC_5322.Message.ID {
@@ -49,8 +44,6 @@ extension RFC_5322.Message.ID {
     public static var coder: Coder<ArraySlice<Byte>, [Byte]> { .init() }
 }
 
-extension RFC_5322.Message.ID: Coder.Codable {}
-
 extension RFC_5322.Message.ID {
 
     public enum Parts {}
@@ -70,16 +63,17 @@ extension RFC_5322.Message.ID.Parts {
 
         public init() {}
 
-        @Coder::Coder.Builder<Input, Buffer>
+        @Coder::Builder<Input, Buffer>
         public var body: some Coding<Input, ([Byte], [Byte]), Buffer, Failure> {
-            Coder::Coder.Sequence(Input.self, Buffer.self) {
-                "<"
-                Parser.Many(1..., Coder::Coder.First.Where { $0.bitPattern != 0x40 && $0.bitPattern != 0x3E })
-                "@"
-                Parser.Many(1..., Coder::Coder.First.Where { $0.bitPattern != 0x3E })
-                ">"
+            Coder::Coder(Input.self, Buffer.self) {
+                Coder::ConsumingLiteral<Input, Buffer>([Byte](utf8: "<"))
+                Parser::Many(1..., Coder::First.Where { $0.bitPattern != 0x40 && $0.bitPattern != 0x3E }, rejected: { _ in true })
+                Coder::ConsumingLiteral<Input, Buffer>([Byte](utf8: "@"))
+                Parser::Many(1..., Coder::First.Where { $0.bitPattern != 0x3E }, rejected: { _ in true })
+                Coder::ConsumingLiteral<Input, Buffer>([Byte](utf8: ">"))
             }
-            .error.map { (failure) -> Failure in
+            .map(to: { ($0.first, $0.second) }, from: { .init($0.0, $0.1) })
+            .mapFailure { (failure) -> Failure in
                 switch failure {
                 case .left(.left(.left(.left))): .expectedOpenAngle
                 case .left(.left(.left(.right))): .expectedAtSign

@@ -1,19 +1,12 @@
+import Pair
 public import Byte
 public import Coder
 public import Cursor
-public import Cursor_Standard_Library_Integration
 public import RFC_5322
 import ASCII
-import ASCII_Decimal_Coder
-import Binary_Serializable
-import Byte_Standard_Library_Integration
-import Cursor_Coder
-import Cursor_Parser_Many
-import Cursor_Parser_Optionally
-import Either
-import Iterator_Coder
+import Binary
 import Parser
-import Parser_Error
+import Either
 import Serializer
 
 extension RFC_5322.DateTime {
@@ -104,8 +97,6 @@ extension RFC_5322.DateTime {
     public static var coder: Coder<ArraySlice<Byte>, [Byte]> { .init() }
 }
 
-extension RFC_5322.DateTime: Coder.Codable {}
-
 extension RFC_5322.DateTime {
 
     public enum Fields {}
@@ -139,7 +130,15 @@ extension RFC_5322.DateTime.Fields {
         public borrowing func parse(_ input: inout Input) throws(Failure) -> Output {
             let start = input.checkpoint
             RFC_5322.Whitespace.Coder<Input, Buffer>().parse(&input)
-            let dayOfWeek = Parser.Optionally(DayOfWeek.Coder<Input, Buffer>()).parse(&input)
+            let probe = input.checkpoint
+            let beginsWeekday = input.next().map(RFC_5322.DateTime.Fields.isLetter) ?? false
+            input.seek(to: probe)
+            let dayOfWeek: [Byte]?
+            if beginsWeekday {
+                do throws(DayOfWeek.Error) {
+                    dayOfWeek = try DayOfWeek.Coder<Input, Buffer>().parse(&input)
+                } catch { throw .expectedDate }
+            } else { dayOfWeek = nil }
             let date: (Int, [Byte], Int)
             do throws(Date.Error) {
                 date = try Date.Coder<Input, Buffer>().parse(&input)
@@ -216,14 +215,14 @@ extension RFC_5322.DateTime.Fields.DayOfWeek {
 
         public init() {}
 
-        @Coder::Coder.Builder<Input, Buffer>
+        @Coder::Builder<Input, Buffer>
         public var body: some Coding<Input, [Byte], Buffer, Failure> {
-            Coder::Coder.Sequence(Input.self, Buffer.self) {
-                Parser.Many(3...3, Coder::Coder.First.Where(RFC_5322.DateTime.Fields.isLetter))
-                ","
+            Coder::Coder(Input.self, Buffer.self) {
+                Parser::Many(3...3, Coder::First.Where(RFC_5322.DateTime.Fields.isLetter), rejected: { _ in true })
+                Coder::ConsumingLiteral<Input, Buffer>([Byte](utf8: ","))
                 RFC_5322.Whitespace.Coder(canonical: " ")
             }
-            .error.map { (_) -> Failure in .malformed }
+            .mapFailure { (_) -> Failure in .malformed }
         }
     }
 }
@@ -240,16 +239,18 @@ extension RFC_5322.DateTime.Fields.Date {
 
         public init() {}
 
-        @Coder::Coder.Builder<Input, Buffer>
+        @Coder::Builder<Input, Buffer>
         public var body: some Coding<Input, (Int, [Byte], Int), Buffer, Failure> {
-            Coder::Coder.Sequence(Input.self, Buffer.self) {
+            Coder::Coder(Input.self, Buffer.self) {
                 ASCII.Decimal.Coder<Input, Buffer, Int>()
                 RFC_5322.Whitespace.Coder(canonical: " ")
-                Parser.Many(3...3, Coder::Coder.First.Where(RFC_5322.DateTime.Fields.isLetter))
+                Parser::Many(3...3, Coder::First.Where(RFC_5322.DateTime.Fields.isLetter), rejected: { _ in true })
                 RFC_5322.Whitespace.Coder(canonical: " ")
                 ASCII.Decimal.Coder<Input, Buffer, Int>()
             }
-            .error.map { (_) -> Failure in .malformed }
+            .map(to: { ($0.first.first, $0.first.second, $0.second) },
+                 from: { .init(.init($0.0, $0.1), $0.2) })
+            .mapFailure { (_) -> Failure in .malformed }
         }
     }
 }
@@ -266,21 +267,23 @@ extension RFC_5322.DateTime.Fields.Time {
 
         public init() {}
 
-        @Coder::Coder.Builder<Input, Buffer>
+        @Coder::Builder<Input, Buffer>
         public var body: some Coding<Input, (Int, Int, Int?), Buffer, Failure> {
-            Coder::Coder.Sequence(Input.self, Buffer.self) {
+            Coder::Coder(Input.self, Buffer.self) {
                 RFC_5322.Whitespace.Coder(canonical: " ")
                 ASCII.Decimal.Coder<Input, Buffer, Int>()
-                ":"
+                Coder::ConsumingLiteral<Input, Buffer>([Byte](utf8: ":"))
                 ASCII.Decimal.Coder<Input, Buffer, Int>()
-                Parser.Optionally(
-                    Coder::Coder.Sequence(Input.self, Buffer.self) {
-                        ":"
+                Parser::Optionally(
+                    Coder::Coder(Input.self, Buffer.self) {
+                        Coder::ConsumingLiteral<Input, Buffer>([Byte](utf8: ":"))
                         ASCII.Decimal.Coder<Input, Buffer, Int>()
                     }
-                )
+                , rejected: { failure in if case .left = failure { return true }; return false })
             }
-            .error.map { (_) -> Failure in .malformed }
+            .map(to: { ($0.first.first, $0.first.second, $0.second) },
+                 from: { .init(.init($0.0, $0.1), $0.2) })
+            .mapFailure { (_) -> Failure in .malformed }
         }
     }
 }
@@ -297,13 +300,13 @@ extension RFC_5322.DateTime.Fields.Zone {
 
         public init() {}
 
-        @Coder::Coder.Builder<Input, Buffer>
+        @Coder::Builder<Input, Buffer>
         public var body: some Coding<Input, [Byte], Buffer, Failure> {
-            Coder::Coder.Sequence(Input.self, Buffer.self) {
+            Coder::Coder(Input.self, Buffer.self) {
                 RFC_5322.Whitespace.Coder(canonical: " ")
-                Parser.Many(1..., Coder::Coder.First.Where { !RFC_5322.Whitespace.Coder<Input, Buffer>.isWhitespace($0) })
+                Parser::Many(1..., Coder::First.Where { !RFC_5322.Whitespace.Coder<Input, Buffer>.isWhitespace($0) }, rejected: { _ in true })
             }
-            .error.map { (_) -> Failure in .malformed }
+            .mapFailure { (_) -> Failure in .malformed }
         }
     }
 }

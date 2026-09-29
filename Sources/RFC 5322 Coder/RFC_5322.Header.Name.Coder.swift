@@ -1,7 +1,6 @@
 public import Byte
 public import Coder
 public import Cursor
-public import Cursor_Standard_Library_Integration
 public import RFC_5322
 import Parser
 import Serializer
@@ -37,5 +36,3 @@ extension RFC_5322.Header.Name {
 
     public static var coder: Coder<ArraySlice<Byte>, [Byte]> { .init() }
 }
-
-extension RFC_5322.Header.Name: Coder.Codable {}

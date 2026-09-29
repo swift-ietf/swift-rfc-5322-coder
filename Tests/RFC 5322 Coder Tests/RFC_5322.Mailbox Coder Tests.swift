@@ -1,8 +1,7 @@
+import Serializer
 import Byte
-import Byte_Standard_Library_Integration
 import Coder
-import Coder_Standard_Library_Integration
-import Cursor_Standard_Library_Integration
+import Cursor
 import Parser
 import RFC_5322
 import RFC_5322_Coder
@@ -57,7 +56,7 @@ struct `RFC_5322.Mailbox Coder Tests` {
     @Test
     func `round-trips through the canonical form`() throws {
         let mailbox = try RFC_5322.Mailbox("Doe, John <john@example.com>")
-        #expect(try mailbox.encoded() == "\"Doe, John\" <john@example.com>")
-        #expect(try mailbox.localPart.encoded() == "john")
+        #expect(try type(of: mailbox).coder.serialize(mailbox) == [Byte](utf8: "\"Doe, John\" <john@example.com>"))
+        #expect(try type(of: mailbox.localPart).coder.serialize(mailbox.localPart) == [Byte](utf8: "john"))
     }
 }

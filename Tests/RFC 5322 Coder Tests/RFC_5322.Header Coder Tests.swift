@@ -1,8 +1,7 @@
+import Serializer
 import Byte
-import Byte_Standard_Library_Integration
 import Coder
-import Coder_Standard_Library_Integration
-import Cursor_Standard_Library_Integration
+import Cursor
 import Parser
 import RFC_5322
 import RFC_5322_Coder
@@ -48,8 +47,8 @@ struct `RFC_5322.Header Coder Tests` {
     @Test
     func `round-trips through the canonical form`() throws {
         let header = try RFC_5322.Header(name: .init("X-Test"), value: .init("test value"))
-        #expect(try header.encoded() == "X-Test: test value")
-        #expect(try RFC_5322.Header.Name("X-Test").encoded() == "X-Test")
-        #expect(try RFC_5322.Header.Value("test value").encoded() == "test value")
+        #expect(try type(of: header).coder.serialize(header) == [Byte](utf8: "X-Test: test value"))
+        #expect(try type(of: RFC_5322.Header.Name("X-Test")).coder.serialize(RFC_5322.Header.Name("X-Test")) == [Byte](utf8: "X-Test"))
+        #expect(try type(of: RFC_5322.Header.Value("test value")).coder.serialize(RFC_5322.Header.Value("test value")) == [Byte](utf8: "test value"))
     }
 }
