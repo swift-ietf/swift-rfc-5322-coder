@@ -38,8 +38,8 @@ extension RFC_5322.DateTime {
             let zone = String(decoding: parts.zone, as: UTF8.self)
             guard parts.zone.count == 5,
                 let sign = Self.sign(parts.zone[0]),
-                let hours = Int(String(decoding: parts.zone[1...2], as: UTF8.self)), hours <= 23,
-                let minutes = Int(String(decoding: parts.zone[3...4], as: UTF8.self)), minutes <= 59
+                let hours = Self.decimal(parts.zone[1...2]), hours <= 23,
+                let minutes = Self.decimal(parts.zone[3...4]), minutes <= 59
             else {
                 input.seek(to: start)
                 throw .invalidTimezone(zone)
@@ -83,6 +83,13 @@ extension RFC_5322.DateTime {
 
         public borrowing func serialize(_ output: Output, into buffer: inout Buffer) throws(Failure) {
             RFC_5322.DateTime.serialize(output, into: &buffer)
+        }
+
+        private static func decimal(_ bytes: some Collection<Byte>) -> Int? {
+            bytes.reduce(Int?.some(0)) { value, byte in
+                guard let value, (0x30...0x39).contains(byte.bitPattern) else { return nil }
+                return value * 10 + Int(byte.bitPattern - 0x30)
+            }
         }
 
         private static func sign(_ byte: Byte) -> Int? {
