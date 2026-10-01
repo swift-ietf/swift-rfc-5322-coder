@@ -85,7 +85,7 @@ extension RFC_5322.DateTime {
             RFC_5322.DateTime.serialize(output, into: &buffer)
         }
 
-        private static func decimal(_ bytes: some Collection<Byte>) -> Int? {
+        private static func decimal(_ bytes: some Swift.Collection<Byte>) -> Int? {
             bytes.reduce(Int?.some(0)) { value, byte in
                 guard let value, (0x30...0x39).contains(byte.bitPattern) else { return nil }
                 return value * 10 + Int(byte.bitPattern - 0x30)
