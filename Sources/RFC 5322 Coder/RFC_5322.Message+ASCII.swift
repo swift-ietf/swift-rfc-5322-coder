@@ -2,7 +2,6 @@ public import ASCII
 public import Binary
 public import Byte
 public import RFC_5322
-import Byte
 
 extension RFC_5322.Message: @retroactive ASCII.Serializable, @retroactive Binary.Serializable {
 

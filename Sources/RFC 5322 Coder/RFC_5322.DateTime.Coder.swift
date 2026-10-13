@@ -86,7 +86,7 @@ extension RFC_5322.DateTime {
             RFC_5322.DateTime.serialize(output, into: &buffer)
         }
 
-        private static func decimal(_ bytes: some Swift.Collection<Byte>) -> Int? {
+        private static func decimal(_ bytes: some Swift::Collection<Byte>) -> Int? {
             bytes.reduce(Int?.some(0)) { value, byte in
                 guard let value, (0x30...0x39).contains(byte.bitPattern) else { return nil }
                 return value * 10 + Int(byte.bitPattern - 0x30)
@@ -123,7 +123,7 @@ extension RFC_5322.DateTime.Fields {
         zone: [Byte]
     )
 
-    public enum Error: Swift.Error, Equatable {
+    public enum Error: Swift::Error, Equatable {
         case expectedDate
         case expectedTime
         case expectedZone
@@ -214,7 +214,7 @@ extension RFC_5322.DateTime.Fields {
 
 extension RFC_5322.DateTime.Fields.DayOfWeek {
 
-    public enum Error: Swift.Error, Equatable {
+    public enum Error: Swift::Error, Equatable {
         case malformed
     }
 
@@ -238,7 +238,7 @@ extension RFC_5322.DateTime.Fields.DayOfWeek {
 
 extension RFC_5322.DateTime.Fields.Date {
 
-    public enum Error: Swift.Error, Equatable {
+    public enum Error: Swift::Error, Equatable {
         case malformed
     }
 
@@ -266,7 +266,7 @@ extension RFC_5322.DateTime.Fields.Date {
 
 extension RFC_5322.DateTime.Fields.Time {
 
-    public enum Error: Swift.Error, Equatable {
+    public enum Error: Swift::Error, Equatable {
         case malformed
     }
 
@@ -299,7 +299,7 @@ extension RFC_5322.DateTime.Fields.Time {
 
 extension RFC_5322.DateTime.Fields.Zone {
 
-    public enum Error: Swift.Error, Equatable {
+    public enum Error: Swift::Error, Equatable {
         case malformed
     }
 

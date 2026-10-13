@@ -52,7 +52,7 @@ extension RFC_5322.Message.ID {
 
 extension RFC_5322.Message.ID.Parts {
 
-    public enum Error: Swift.Error, Equatable {
+    public enum Error: Swift::Error, Equatable {
         case expectedOpenAngle
         case expectedAtSign
         case expectedCloseAngle

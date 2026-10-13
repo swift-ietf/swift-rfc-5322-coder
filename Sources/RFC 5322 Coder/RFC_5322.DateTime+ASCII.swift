@@ -2,12 +2,11 @@ public import ASCII
 public import Binary
 public import Byte
 public import RFC_5322
-import Byte
 import Cursor
 
 extension RFC_5322.DateTime: @retroactive ASCII.Parseable {
 
-    public init<Bytes: Swift.Collection>(ascii bytes: Bytes) throws(RFC_5322.DateTime.Error)
+    public init<Bytes: Swift::Collection>(ascii bytes: Bytes) throws(RFC_5322.DateTime.Error)
     where Bytes.Element == Byte {
         var input = ArraySlice<Byte>(bytes)
         let value = try Self.Coder<ArraySlice<Byte>, [Byte]>().parse(&input)
