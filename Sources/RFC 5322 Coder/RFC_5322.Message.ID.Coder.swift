@@ -1,17 +1,16 @@
-import Pair
+import Binary
 public import Byte
 public import Coder
 public import Cursor
-public import RFC_5322
-import Binary
-import Parser
 import Either
+import Pair
+import Parser
+public import RFC_5322
 import Serializer
 
 extension RFC_5322.Message.ID {
 
     public struct Coder<Input: Cursor.`Protocol`<Byte, Never>, Buffer: RangeReplaceableCollection<Byte>>: Coding {
-
 
         public typealias Output = RFC_5322.Message.ID
 

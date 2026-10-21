@@ -11,7 +11,13 @@ struct `Serialization Equivalence` {
     @Test
     func `DateTime serializes to the RFC 5322 date form through both verbs`() throws {
         let date = try RFC_5322.DateTime(
-            year: 2024, month: 1, day: 1, hour: 9, minute: 5, second: 7, timezoneOffsetSeconds: -18000
+            year: 2024,
+            month: 1,
+            day: 1,
+            hour: 9,
+            minute: 5,
+            second: 7,
+            timezoneOffsetSeconds: -18000
         )
         var ascii: [ASCII.Code] = []
         RFC_5322.DateTime.serialize(date, into: &ascii)

@@ -1,14 +1,13 @@
 public import Byte
 public import Coder
 public import Cursor
-public import RFC_5322
 import Parser
+public import RFC_5322
 import Serializer
 
 extension RFC_5322.Header.Value {
 
     public struct Coder<Input: Cursor.`Protocol`<Byte, Never>, Buffer: RangeReplaceableCollection<Byte>>: Coding {
-
 
         public typealias Output = RFC_5322.Header.Value
 

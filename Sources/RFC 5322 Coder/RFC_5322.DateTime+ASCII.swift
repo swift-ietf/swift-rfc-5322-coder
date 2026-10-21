@@ -1,8 +1,8 @@
 public import ASCII
 public import Binary
 public import Byte
-public import RFC_5322
 import Cursor
+public import RFC_5322
 
 extension RFC_5322.DateTime: @retroactive ASCII.Parseable {
 

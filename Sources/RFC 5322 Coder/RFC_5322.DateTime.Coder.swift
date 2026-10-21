@@ -1,18 +1,17 @@
-import Pair
+import ASCII
+import Binary
 public import Byte
 public import Coder
 public import Cursor
-public import RFC_5322
-import ASCII
-import Binary
-import Parser
 import Either
+import Pair
+import Parser
+public import RFC_5322
 import Serializer
 
 extension RFC_5322.DateTime {
 
     public struct Coder<Input: Cursor.`Protocol`<Byte, Never>, Buffer: RangeReplaceableCollection<Byte>>: Coding {
-
 
         public typealias Output = RFC_5322.DateTime
 
@@ -131,7 +130,6 @@ extension RFC_5322.DateTime.Fields {
 
     public struct Coder<Input: Cursor.`Protocol`<Byte, Never>, Buffer: RangeReplaceableCollection<Byte>>: Coding {
 
-
         public typealias Failure = RFC_5322.DateTime.Fields.Error
 
         public init() {}
@@ -147,7 +145,9 @@ extension RFC_5322.DateTime.Fields {
                 do throws(DayOfWeek.Error) {
                     dayOfWeek = try DayOfWeek.Coder<Input, Buffer>().parse(&input)
                 } catch { throw .expectedDate }
-            } else { dayOfWeek = nil }
+            } else {
+                dayOfWeek = nil
+            }
             let date: (Int, [Byte], Int)
             do throws(Date.Error) {
                 date = try Date.Coder<Input, Buffer>().parse(&input)
@@ -257,8 +257,10 @@ extension RFC_5322.DateTime.Fields.Date {
                 RFC_5322.Whitespace.Coder(canonical: " ")
                 ASCII.Decimal.Coder<Input, Buffer, Int>()
             }
-            .map(to: { ($0.first.first, $0.first.second, $0.second) },
-                 from: { .init(.init($0.0, $0.1), $0.2) })
+            .map(
+                to: { ($0.first.first, $0.first.second, $0.second) },
+                from: { .init(.init($0.0, $0.1), $0.2) }
+            )
             .mapFailure { (_) -> Failure in .malformed }
         }
     }
@@ -287,11 +289,17 @@ extension RFC_5322.DateTime.Fields.Time {
                     Coder::Coder(Input.self, Buffer.self) {
                         Coder::ConsumingLiteral<Input, Buffer>([Byte](utf8: ":"))
                         ASCII.Decimal.Coder<Input, Buffer, Int>()
+                    },
+                    rejected: { failure in
+                        if case .left = failure { return true }
+                        return false
                     }
-                , rejected: { failure in if case .left = failure { return true }; return false })
+                )
             }
-            .map(to: { ($0.first.first, $0.first.second, $0.second) },
-                 from: { .init(.init($0.0, $0.1), $0.2) })
+            .map(
+                to: { ($0.first.first, $0.first.second, $0.second) },
+                from: { .init(.init($0.0, $0.1), $0.2) }
+            )
             .mapFailure { (_) -> Failure in .malformed }
         }
     }

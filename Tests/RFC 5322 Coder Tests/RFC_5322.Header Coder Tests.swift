@@ -1,10 +1,10 @@
-import Serializer
 import Byte
 import Coder
 import Cursor
 import Parser
 import RFC_5322
 import RFC_5322_Coder
+import Serializer
 import Testing
 
 @Suite
