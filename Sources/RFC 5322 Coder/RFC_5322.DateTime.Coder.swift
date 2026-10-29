@@ -227,8 +227,8 @@ extension RFC_5322.DateTime.Fields.DayOfWeek {
         @Coder::Builder<Input, Buffer>
         public var body:
             some Coding
-            & Parsing<Input, [Byte], Failure>
-            & Serializing<[Byte], Buffer, Failure>
+                & Parsing<Input, [Byte], Failure>
+                & Serializing<[Byte], Buffer, Failure>
         {
             Coder::Coder(Input.self, Buffer.self) {
                 Parser::Many(3...3, Coder::First.Where(RFC_5322.DateTime.Fields.isLetter), rejected: { _ in true })
@@ -255,8 +255,8 @@ extension RFC_5322.DateTime.Fields.Date {
         @Coder::Builder<Input, Buffer>
         public var body:
             some Coding
-            & Parsing<Input, (Int, [Byte], Int), Failure>
-            & Serializing<(Int, [Byte], Int), Buffer, Failure>
+                & Parsing<Input, (Int, [Byte], Int), Failure>
+                & Serializing<(Int, [Byte], Int), Buffer, Failure>
         {
             Coder::Coder(Input.self, Buffer.self) {
                 ASCII.Decimal.Coder<Input, Buffer, Int>()
@@ -289,8 +289,8 @@ extension RFC_5322.DateTime.Fields.Time {
         @Coder::Builder<Input, Buffer>
         public var body:
             some Coding
-            & Parsing<Input, (Int, Int, Int?), Failure>
-            & Serializing<(Int, Int, Int?), Buffer, Failure>
+                & Parsing<Input, (Int, Int, Int?), Failure>
+                & Serializing<(Int, Int, Int?), Buffer, Failure>
         {
             Coder::Coder(Input.self, Buffer.self) {
                 RFC_5322.Whitespace.Coder(canonical: " ")
@@ -332,8 +332,8 @@ extension RFC_5322.DateTime.Fields.Zone {
         @Coder::Builder<Input, Buffer>
         public var body:
             some Coding
-            & Parsing<Input, [Byte], Failure>
-            & Serializing<[Byte], Buffer, Failure>
+                & Parsing<Input, [Byte], Failure>
+                & Serializing<[Byte], Buffer, Failure>
         {
             Coder::Coder(Input.self, Buffer.self) {
                 RFC_5322.Whitespace.Coder(canonical: " ")

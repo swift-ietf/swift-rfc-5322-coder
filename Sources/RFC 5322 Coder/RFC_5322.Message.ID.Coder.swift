@@ -66,8 +66,8 @@ extension RFC_5322.Message.ID.Parts {
         @Coder::Builder<Input, Buffer>
         public var body:
             some Coding
-            & Parsing<Input, ([Byte], [Byte]), Failure>
-            & Serializing<([Byte], [Byte]), Buffer, Failure>
+                & Parsing<Input, ([Byte], [Byte]), Failure>
+                & Serializing<([Byte], [Byte]), Buffer, Failure>
         {
             Coder::Coder(Input.self, Buffer.self) {
                 Coder::ConsumingLiteral<Input, Buffer>([Byte](utf8: "<"))
