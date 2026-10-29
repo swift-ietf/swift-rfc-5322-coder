@@ -225,7 +225,11 @@ extension RFC_5322.DateTime.Fields.DayOfWeek {
         public init() {}
 
         @Coder::Builder<Input, Buffer>
-        public var body: some Coding<Input, [Byte], Buffer, Failure> {
+        public var body:
+            some Coding
+            & Parsing<Input, [Byte], Failure>
+            & Serializing<[Byte], Buffer, Failure>
+        {
             Coder::Coder(Input.self, Buffer.self) {
                 Parser::Many(3...3, Coder::First.Where(RFC_5322.DateTime.Fields.isLetter), rejected: { _ in true })
                 Coder::ConsumingLiteral<Input, Buffer>([Byte](utf8: ","))
@@ -249,7 +253,11 @@ extension RFC_5322.DateTime.Fields.Date {
         public init() {}
 
         @Coder::Builder<Input, Buffer>
-        public var body: some Coding<Input, (Int, [Byte], Int), Buffer, Failure> {
+        public var body:
+            some Coding
+            & Parsing<Input, (Int, [Byte], Int), Failure>
+            & Serializing<(Int, [Byte], Int), Buffer, Failure>
+        {
             Coder::Coder(Input.self, Buffer.self) {
                 ASCII.Decimal.Coder<Input, Buffer, Int>()
                 RFC_5322.Whitespace.Coder(canonical: " ")
@@ -279,7 +287,11 @@ extension RFC_5322.DateTime.Fields.Time {
         public init() {}
 
         @Coder::Builder<Input, Buffer>
-        public var body: some Coding<Input, (Int, Int, Int?), Buffer, Failure> {
+        public var body:
+            some Coding
+            & Parsing<Input, (Int, Int, Int?), Failure>
+            & Serializing<(Int, Int, Int?), Buffer, Failure>
+        {
             Coder::Coder(Input.self, Buffer.self) {
                 RFC_5322.Whitespace.Coder(canonical: " ")
                 ASCII.Decimal.Coder<Input, Buffer, Int>()
@@ -318,7 +330,11 @@ extension RFC_5322.DateTime.Fields.Zone {
         public init() {}
 
         @Coder::Builder<Input, Buffer>
-        public var body: some Coding<Input, [Byte], Buffer, Failure> {
+        public var body:
+            some Coding
+            & Parsing<Input, [Byte], Failure>
+            & Serializing<[Byte], Buffer, Failure>
+        {
             Coder::Coder(Input.self, Buffer.self) {
                 RFC_5322.Whitespace.Coder(canonical: " ")
                 Parser::Many(1..., Coder::First.Where { !RFC_5322.Whitespace.Coder<Input, Buffer>.isWhitespace($0) }, rejected: { _ in true })
